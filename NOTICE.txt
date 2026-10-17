@@ -1,0 +1,36 @@
+Melodarium
+Every arrangement of the notes you pick, written as LilyPond scores.
+
+Copyright (C) 2026 Joshua Nichols
+Source code: https://github.com/joshdnichols/Melodarium
+
+This program is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this
+program (the file LICENSE). If not, see <https://www.gnu.org/licenses/>.
+
+This covers all of Melodarium: the program, the build scripts, the documentation,
+and the Melodarium name artwork, logo and icons. The bundled music fonts, LilyPond
+and the other bundled software keep their own licenses (see the Acknowledgements
+page in the app and the licenses folder).
+
+
+Additional permission under GNU GPL version 3 section 7
+
+The files Melodarium produces (LilyPond scores, PDFs, MIDI files and text lists)
+contain parts of this program that it copies into them, such as the LilyPond and
+PostScript code for measure numbers, labels, titles and outlined music. As an
+additional permission, those parts, as they appear in files produced by Melodarium,
+may be used, copied, modified and distributed by anyone, for any purpose, under the
+CC0 1.0 Universal public domain dedication
+(https://creativecommons.org/publicdomain/zero/1.0/), without the conditions of the
+GNU General Public License.
+
+This permission covers only the files Melodarium produces. It does not apply to
+Melodarium itself, which stays under the GNU General Public License.
