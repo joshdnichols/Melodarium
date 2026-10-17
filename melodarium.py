@@ -1,6 +1,26 @@
 #!/usr/bin/env python3
+# Melodarium - every arrangement of the notes you pick, written as LilyPond scores.
+# Copyright (C) 2026 Joshua Nichols
+# https://github.com/joshdnichols/Melodarium
+#
+# This program is free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this
+# program (the file LICENSE). If not, see <https://www.gnu.org/licenses/>.
+#
+# Additional permission under GNU GPL version 3 section 7: the parts of this program
+# that it copies into the files it produces (LilyPond scores, PDFs, MIDI files and
+# text lists), as they appear in those files, may be used by anyone under the CC0 1.0
+# Universal public domain dedication, without the conditions of the GPL. This does
+# not apply to the program itself. Full wording: NOTICE.txt.
 """
-Note permutations with a small control panel, written as LilyPond scores.
+Melodarium: note permutations with a small control panel, written as LilyPond scores.
 
 In the panel you choose:
   - notes per permutation (2-12, slider)
@@ -100,6 +120,12 @@ BUNDLE_RESOURCES = (os.path.normpath(os.path.join(os.path.dirname(os.path.abspat
                                                   "..", "Resources"))
                     if getattr(sys, "frozen", False) and sys.platform == "darwin" else RESOURCE_DIR)
 APP_NAME = "Melodarium"
+APP_COPYRIGHT = "Copyright (C) 2026 Joshua Nichols"
+APP_SOURCE_URL = "https://github.com/joshdnichols/Melodarium"
+# written at the top of every .ly file: what may be done with the code in it
+LY_NOTICE = ("% Made with Melodarium (" + APP_SOURCE_URL + ").\n"
+             "% The LilyPond code in this file may be used under CC0 1.0 Universal\n"
+             "% (public domain), by the additional permission in Melodarium's license.\n")
 
 
 def _writable(folder):
@@ -987,6 +1013,7 @@ class Plan:
         spacing = "#1/8" if self.lilypond == "2.26" else "#(ly:make-moment 1/8)"
         return (
             f'\\version "{self.version}"\n'
+            + LY_NOTICE
             + (OUTLINE_SNIPPET.replace("@FONT@", self.music_font or "emmentaler")
                if self.outline_fonts else "")
             + f"#(set-global-staff-size {self.staff_size})\n"
@@ -1268,6 +1295,7 @@ class Plan:
         """master.ly: pulls every finished file of this run into one PDF."""
         lines = [
             f'\\version "{self.version}"',
+            LY_NOTICE.rstrip("\n"),
             "% Engraves every file of this run in ONE LilyPond run (the PDFs are split",
             "% into books of the chosen page count). Fine for small runs; for large",
             "% runs use engrave_all.bat (Windows) or engrave_all.command (Mac), which",
@@ -1879,6 +1907,8 @@ color:var(--ink);line-height:0;flex:none}
 .logobtn:hover{background:var(--card)}
 .logobtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .logo{width:auto;height:90px;display:block}
+.legal{margin:28px 0 8px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+.legal a{color:inherit}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .brand .sub{max-width:300px}
 #quit{margin-top:4px}
@@ -2270,6 +2300,8 @@ white-space:normal;opacity:0;pointer-events:none;transition:opacity .12s;z-index
   </div>
 </aside>
 </div>
+<footer class="legal">Melodarium · {APP_COPYRIGHT_HTML} · Free software under the GNU GPL v3 or later, with no warranty ·
+  <a href="{APP_SOURCE_URL_HTML}" target="_blank" rel="noopener">Source code</a></footer>
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -3160,6 +3192,8 @@ $("reset").onclick = () => {
 poll(); const pollTimer = setInterval(poll, 250);
 </script></body></html>
 """
+PAGE = (PAGE.replace("{APP_COPYRIGHT_HTML}", APP_COPYRIGHT.replace("(C)", "©"))
+            .replace("{APP_SOURCE_URL_HTML}", APP_SOURCE_URL))
 
 engine = None   # created in main()
 
@@ -3676,9 +3710,25 @@ def acknowledgements_html(theme=None):
            ".item b{font-size:15px}.small{color:var(--muted);font-size:13px}a{color:var(--accent)}",
            "pre{white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:6px;max-height:320px;overflow:auto}",
            "</style></head><body><main>",
-           "<h1>Acknowledgements</h1>",
-           "<p class='small'>Melodarium is built with, and includes, the free software and fonts below, "
-           "used under their licenses. Click a license name to read it in full.</p>"]
+           "<h1>Acknowledgements</h1>"]
+
+    # ---- Melodarium itself (the GPL's "appropriate legal notices") ----
+    gpl = (link("app", "melodarium/COPYING.txt", "GNU General Public License, version 3")
+           if read_license("app", "melodarium/COPYING.txt")
+           else "<a href='https://www.gnu.org/licenses/gpl-3.0.html' target='_blank'>GNU General Public License, version 3</a>")
+    notice = (" · " + link("app", "melodarium/NOTICE.txt", "full notice and additional permission")
+              if read_license("app", "melodarium/NOTICE.txt") else "")
+    out.append("<h2>Melodarium</h2><div class='item'><b>Melodarium</b> — free software under the "
+               f"{gpl}, or (at your option) any later version"
+               f"<div class='small'>{esc(APP_COPYRIGHT.replace('(C)', '©'))}. Source code: "
+               f"<a href='{APP_SOURCE_URL}' target='_blank'>{esc(APP_SOURCE_URL.split('://')[1])}</a>{notice}</div>"
+               "<div class='small'>You may share and change Melodarium under the terms of that license. "
+               "It comes with <b>no warranty</b>, to the extent permitted by law. The name artwork, logo and "
+               "icons are under the same license.</div>"
+               "<div class='small'>Additional permission: the code Melodarium writes into your scores and "
+               "other files may be used under CC0 1.0 (public domain), so the GPL never applies to your scores.</div></div>")
+    out.append("<p class='small'>Melodarium is built with, and includes, the free software and fonts below, "
+               "used under their licenses. Click a license name to read it in full.</p>")
 
     # ---- the scores ----
     out.append("<h2>Your scores</h2><div class='item'><b>CC0 1.0 Universal</b> — the scores carry a "
@@ -3755,6 +3805,24 @@ def acknowledgements_html(theme=None):
                "<div class='item'><b>PyInstaller</b> — GPL version 2 with a bootloader exception"
                "<div class='small'>Packages the app. Its exception allows apps it builds to use any license. "
                "<a href='https://pyinstaller.org/en/stable/license.html' target='_blank'>PyInstaller license</a></div></div>")
+    pkg_root = os.path.join(dirs["app"], "python") if dirs.get("app") else None
+    if pkg_root and os.path.isdir(pkg_root):
+        for key in sorted(os.listdir(pkg_root), key=str.lower):
+            try:
+                with open(os.path.join(pkg_root, key, "info.json"), encoding="utf-8") as f:
+                    info = json.load(f)
+            except (OSError, ValueError):
+                continue
+            files = [f for f in info.get("files", []) if read_license("app", f"python/{key}/{f}") is not None]
+            home = info.get("home") or ""
+            refs = [link("app", f"python/{key}/{f}", f) for f in files]
+            if home.startswith(("https://", "http://")):
+                refs.append(f"<a href='{esc(home)}' target='_blank'>project page</a>")
+            out.append(f"<div class='item'><b>{esc(info.get('name', key))}</b> {esc(info.get('version', ''))}"
+                       f" — {esc(info.get('license', 'see license'))}"
+                       + ("<div class='small'>" + ("Draws the app window." if key == "pywebview"
+                                                   else "Used by pywebview for the app window.") + "</div>")
+                       + (f"<div class='small'>{' · '.join(refs)}</div>" if refs else "") + "</div>")
     out.append("</main></body></html>")
     return "\n".join(out)
 
